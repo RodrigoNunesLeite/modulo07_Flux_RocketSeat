@@ -29,9 +29,30 @@ class Home extends Component {
 
   handleAddProduct = (product) => {
     /**
-     * Dispatch é usado para disparar uma action para o redux
+     * Dispatch é usado para disparar uma action para o redux,
+     * temos acesso a essa propriedade assim que conectamos
+     * nosso componente ao connect do react-redux
      */
-    const { dispath } = this.props;
+    const { dispatch } = this.props;
+
+    /**
+     * Aqui criamos nossa action
+     *
+     * depois do type, informamos o conteudo que quisermos
+     *
+     * Quando o dispatch é executado, todos os reducers da nossa
+     * aplicação são executados
+     *
+     * o dispatch serve para dispararmos as actions do redux, as
+     * actions são responsavei para dizer ao redux que queremos modificar
+     * nosso estado.
+     * É obrigatorio informar um type e o product que passamos é o valor
+     * que queremos acrescentar no estado
+     */
+    dispatch({
+      type: 'ADD_TO_CART',
+      product,
+    });
   };
 
   render() {
