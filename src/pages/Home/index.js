@@ -4,10 +4,15 @@ import React, { Component } from 'react';
  * componente
  */
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { formatPrice } from '../../util/format';
-
 import api from '../../services/api';
+
+/**
+ * O CartActions contem todas as funcoes do componente actions
+ */
+import * as CartActions from '../../store/modules/cart/actions';
 
 import { ProductList } from './styles';
 
@@ -33,7 +38,7 @@ class Home extends Component {
      * temos acesso a essa propriedade assim que conectamos
      * nosso componente ao connect do react-redux
      */
-    const { dispatch } = this.props;
+    const { addToCart } = this.props;
 
     /**
      * Aqui criamos nossa action
@@ -49,14 +54,13 @@ class Home extends Component {
      * É obrigatorio informar um type e o product que passamos é o valor
      * que queremos acrescentar no estado
      */
-    dispatch({
-      type: 'ADD_TO_CART',
-      product,
-    });
+    // dispatch(CartActions.addToCart(product));
+    addToCart(product);
   };
 
   render() {
     const { products } = this.state;
+    const { amount } = this.props;
 
     return (
       <ProductList>
@@ -70,7 +74,8 @@ class Home extends Component {
               onClick={() => this.handleAddProduct(product)}
             >
               <div>
-                <MdAddShoppingCart size={16} color="#FFF" /> 3
+                <MdAddShoppingCart size={16} color="#FFF" />{' '}
+                {amount[product.id] || 0}
               </div>
 
               <span>ADICIONAR AO CARRINHO</span>
@@ -82,8 +87,23 @@ class Home extends Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+
+    return amount;
+  }, {}),
+});
+/**
+ * Transforma actions do redux, em propriedades
+ * do nosso componente, por exemplo a funcao
+ * addToCart dentro do CartAction pode ser
+ * chamada diretamente do props
+ */
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(CartActions, dispatch);
 /**
  * O connect chama uma funcao e nesse caso,
  * estamos passando o valor 'Home' para essa função
  */
-export default connect()(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
