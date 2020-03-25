@@ -12,9 +12,23 @@
  * É obrigatorio informar um type e o product que passamos é o valor
  * que queremos acrescentar no estado
  */
-export function addToCart(product) {
+/**
+ * Por conta do redux-saga, o addToCartRequest não sera
+ * ouvido pelo reducer, mas será chamada pelo carrinho,
+ * sera ouvida pelo saga e depois o saga vai a chamada
+ * do addToCartSuccess e esse sim sera ouvido pelo
+ * reducer
+ */
+export function addToCartRequest(id) {
   return {
-    type: '@cart/ADD',
+    type: '@cart/ADD_REQUEST',
+    id,
+  };
+}
+
+export function addToCartSuccess(product) {
+  return {
+    type: '@cart/ADD_SUCCESS',
     product,
   };
 }

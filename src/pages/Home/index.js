@@ -32,13 +32,13 @@ class Home extends Component {
     this.setState({ products: data });
   }
 
-  handleAddProduct = (product) => {
+  handleAddProduct = (id) => {
     /**
      * Dispatch é usado para disparar uma action para o redux,
      * temos acesso a essa propriedade assim que conectamos
      * nosso componente ao connect do react-redux
      */
-    const { addToCart } = this.props;
+    const { addToCartRequest } = this.props;
 
     /**
      * Aqui criamos nossa action
@@ -55,7 +55,7 @@ class Home extends Component {
      * que queremos acrescentar no estado
      */
     // dispatch(CartActions.addToCart(product));
-    addToCart(product);
+    addToCartRequest(id);
   };
 
   render() {
@@ -71,7 +71,7 @@ class Home extends Component {
             <span>{product.priceFormatted}</span>
             <button
               type="button"
-              onClick={() => this.handleAddProduct(product)}
+              onClick={() => this.handleAddProduct(product.id)}
             >
               <div>
                 <MdAddShoppingCart size={16} color="#FFF" />{' '}
