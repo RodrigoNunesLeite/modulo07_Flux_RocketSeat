@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 
 import './config/ReactotronConfig';
 
@@ -10,6 +11,11 @@ import Routes from './routes';
 
 import store from './store';
 
+/**
+ * <ToastContainer autoClose={3000}/> = o 3 mil se refere
+ * a quantidade de tempo que nossa mensagem ficara exibida
+ * no sistema
+ */
 function App() {
   return (
     <Provider store={store}>
@@ -17,6 +23,7 @@ function App() {
         <Header />
         <Routes />
         <GlobalStyle />
+        <ToastContainer autoClose={3000} />
       </BrowserRouter>
     </Provider>
   );
