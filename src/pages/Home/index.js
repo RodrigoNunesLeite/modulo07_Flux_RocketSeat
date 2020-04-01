@@ -1,10 +1,18 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 /**
  * Conecta o estado criado no redux, com o nosso
  * componente
  */
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+// import { connect } from 'react-redux';
+/**
+ * O use selector, substitui o connect, ele permite
+ * selecionar os valores do estado
+ *
+ * useDispath é usado para disparar nossas actions
+ */
+import { useDispatch, useSelector } from 'react-redux';
+
+// import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { formatPrice } from '../../util/format';
 import api from '../../services/api';
@@ -16,30 +24,42 @@ import * as CartActions from '../../store/modules/cart/actions';
 
 import { ProductList } from './styles';
 
-class Home extends Component {
-  state = {
-    products: [],
-  };
+// amount vem do props
+export default function Home() {
+  const [products, setProducts] = useState([]);
+  const amount = useSelector((state) =>
+    state.cart.reduce((sumAmount, product) => {
+      sumAmount[product.id] = product.amount;
 
-  async componentDidMount() {
-    const response = await api.get('products');
+      return sumAmount;
+    }, {})
+  );
 
-    const data = response.data.map((product) => ({
-      ...product,
-      priceFormatted: formatPrice(product.price),
-    }));
+  const dispatch = useDispatch();
 
-    this.setState({ products: data });
-  }
+  useEffect(() => {
+    async function loadProducts() {
+      const response = await api.get('products');
 
-  handleAddProduct = (id) => {
+      const data = response.data.map((product) => ({
+        ...product,
+        priceFormatted: formatPrice(product.price),
+      }));
+
+      setProducts(data);
+    }
+
+    loadProducts();
+  }, []);
+
+  function handleAddProduct(id) {
     /**
      * Dispatch é usado para disparar uma action para o redux,
      * temos acesso a essa propriedade assim que conectamos
      * nosso componente ao connect do react-redux
-     */
-    const { addToCartRequest } = this.props;
 
+    const { addToCartRequest } = this.props;
+ */
     /**
      * Aqui criamos nossa action
      *
@@ -55,38 +75,34 @@ class Home extends Component {
      * que queremos acrescentar no estado
      */
     // dispatch(CartActions.addToCart(product));
-    addToCartRequest(id);
-  };
-
-  render() {
-    const { products } = this.state;
-    const { amount } = this.props;
-
-    return (
-      <ProductList>
-        {products.map((product) => (
-          <li key={product.id}>
-            <img src={product.image} alt={product.title} />
-            <strong>{product.title}</strong>
-            <span>{product.priceFormatted}</span>
-            <button
-              type="button"
-              onClick={() => this.handleAddProduct(product.id)}
-            >
-              <div>
-                <MdAddShoppingCart size={16} color="#FFF" />{' '}
-                {amount[product.id] || 0}
-              </div>
-
-              <span>ADICIONAR AO CARRINHO</span>
-            </button>
-          </li>
-        ))}
-      </ProductList>
-    );
+    dispatch(CartActions.addToCartRequest(id));
   }
+
+  return (
+    <ProductList>
+      {products.map((product) => (
+        <li key={product.id}>
+          <img src={product.image} alt={product.title} />
+          <strong>{product.title}</strong>
+          <span>{product.priceFormatted}</span>
+          <button type="button" onClick={() => handleAddProduct(product.id)}>
+            <div>
+              <MdAddShoppingCart size={16} color="#FFF" />{' '}
+              {amount[product.id] || 0}
+            </div>
+
+            <span>ADICIONAR AO CARRINHO</span>
+          </button>
+        </li>
+      ))}
+    </ProductList>
+  );
 }
 
+/**
+ * Todo o trecho abaixo foi substituido pelo uso do hooks
+ */
+/*
 const mapStateToProps = (state) => ({
   amount: state.cart.reduce((amount, product) => {
     amount[product.id] = product.amount;
@@ -94,16 +110,23 @@ const mapStateToProps = (state) => ({
     return amount;
   }, {}),
 });
+*/
 /**
  * Transforma actions do redux, em propriedades
  * do nosso componente, por exemplo a funcao
  * addToCart dentro do CartAction pode ser
  * chamada diretamente do props
- */
+
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(CartActions, dispatch);
+  */
 /**
  * O connect chama uma funcao e nesse caso,
  * estamos passando o valor 'Home' para essa função
+
+export default connect(
+  // mapStateToProps,
+  null,
+  mapDispatchToProps
+)(Home);
  */
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
